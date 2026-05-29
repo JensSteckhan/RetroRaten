@@ -1,0 +1,158 @@
+[
+  {
+    "id": 1,
+    "image": "BilderZeug/Waehlscheibentelefon.jpg",
+    "name": "Wählscheibentelefon - Wählscheibe",
+    "pfeil": true,
+    "pfeil_x": 59,
+    "pfeil_y": 50,
+    "choices": ["Wählscheibe", "Nummernkreis", "Ziffernpicker", "Lochscheibe", "Lochkarte"],
+    "correct_answer": "Wählscheibe"
+  },
+  {
+    "id": 2,
+    "image": "BilderZeug/Waehlscheibentelefon.jpg",
+    "name": "Wählscheibentelefon - Telefonhörer",
+    "pfeil": true,
+    "pfeil_x": 49,
+    "pfeil_y": 18,
+    "choices": ["Muschelhalter", "Telefonhörer", "Hörrohr", "Empfänger", "Handteil"],
+    "correct_answer": "Telefonhörer"
+  },
+  {
+    "id": 3,
+    "image": "BilderZeug/Plattenspieler.jpg",
+    "name": "Plattenspieler - Tonarm",
+    "pfeil": true,
+    "pfeil_x": 70,
+    "pfeil_y": 39,
+    "choices": ["Tonarm", "Nadelkran", "Aufleser", "Abnehmer", "Nadelhalter"],
+    "correct_answer": "Tonarm"
+  },
+  {
+    "id": 4,
+    "image": "BilderZeug/Plattenspieler.jpg",
+    "name": "Plattenspieler - Plattenteller",
+    "pfeil": true,
+    "pfeil_x": 38,
+    "pfeil_y": 52,
+    "choices": ["Drehteller", "Drehscheibe", "Plattenteller", "Plattenschleuder", "Vinylhalter"],
+    "correct_answer": "Plattenteller"
+  },
+  {
+    "id": 5,
+    "image": "BilderZeug/Mirofiche.jpg",
+    "name": "Mikrofiche",
+    "pfeil": false,
+    "choices": ["Überweisungsformular", "Mikrofilm", "DNA Scan", "Röntgenaufnahme", "Mikrofiche"],
+    "correct_answer": "Mikrofiche"
+  },
+  {
+    "id": 6,
+    "image": "BilderZeug/Blitzlichtwuerfel.jpg",
+    "name": "Blitzlichtwürfel",
+    "pfeil": false,
+    "choices": ["Kunstdiamant", "Eiswürfelform", "Pillendose", "Grillanzünder", "Blitzlichtwürfel"],
+    "correct_answer": "Blitzlichtwürfel"
+  },
+  {
+    "id": 7,
+    "image": "BilderZeug/Kasettenrekorder.jpg",
+    "name": "Kassettenspieler - Vorspultaste",
+    "pfeil": true,
+    "pfeil_x": 65,
+    "pfeil_y": 63,
+    "choices": ["Vorspulen", "Browsen", "Schnelldrehen", "Eildrehen"],
+    "correct_answer": "Vorspulen"
+  },
+  {
+    "id": 8,
+    "image": "BilderZeug/Gluehbirne.jpg",
+    "name": "Glühbirne - Glühfaden",
+    "pfeil": true,
+    "pfeil_x": 50,
+    "pfeil_y": 38,
+    "choices": ["Glühfaden", "Leuchtschnur", "Heizdraht", "Filament", "Osram"],
+    "correct_answer": "Glühfaden"
+  },
+  {
+    "id": 9,
+    "image": "BilderZeug/Expander.jpg",
+    "name": "Expander",
+    "pfeil": false,
+    "choices": ["Grillauflage", "Reisewäscheleine", "Expander", "Abschleppseil", "Katzenschaukel"],
+    "correct_answer": "Expander"
+  },
+  {
+    "id": 10,
+    "image": "BilderZeug/Brotschneidemaschine.jpg",
+    "name": "Brotschneidemaschine",
+    "pfeil": false,
+    "choices": ["Küchenkreissäge", "Schinkenschneider", "Feinholzschneider", "Brotschneidemaschine", "Brothobel"],
+    "correct_answer": "Brotschneidemaschine"
+  },
+  {
+    "id": 11,
+    "image": "BilderZeug/Diktiergerat.jpg",
+    "name": "Diktiergerät",
+    "pfeil": false,
+    "choices": ["Walkie Talkie", "Sprachspeicher", "Diktiergerät", "Notizgerät", "Interview Catcher"],
+    "correct_answer": "Diktiergerät"
+  },
+  {
+    "id": 12,
+    "image": "BilderZeug/Endlospapier.jpg",
+    "name": "Endlospapier",
+    "pfeil": false,
+    "choices": ["Toilettenpapier (russisch)", "Fließbandpapier", "Lochstreifen", "Endlospapier"],
+    "correct_answer": "Endlospapier"
+  },
+  {
+    "id": 13,
+    "image": "BilderZeug/Tonbandgeraet.jpg",
+    "name": "Tonbandgerät",
+    "pfeil": false,
+    "choices": ["Diaprojektor", "Rechenzentrum", "Tonbandgerät", "Salatschleuder", "Radarfalle"],
+    "correct_answer": "Tonbandgerät"
+  },
+  {
+    "id": 14,
+    "image": "BilderZeug/Joystick.jpg",
+    "name": "Joystick",
+    "pfeil": false,
+    "choices": ["Mokkadrücker", "Vibrator", "Joystick", "Massagestab", "Mottenfalle"],
+    "correct_answer": "Joystick"
+  },
+  {
+    "id": 15,
+    "image": "BilderZeug/Hoehensonne.jpg",
+    "name": "Höhensonne",
+    "pfeil": false,
+    "choices": ["Overhead Projektor", "Faxgerät", "Höhensonne", "Radarfalle"],
+    "correct_answer": "Höhensonne"
+  },
+  {
+    "id": 16,
+    "image": "BilderZeug/OverheadProjektor.jpg",
+    "name": "Overhead Projektor",
+    "pfeil": false,
+    "choices": ["Overhead Projektor", "Höhensonne", "Weltempfänger", "Periskop"],
+    "correct_answer": "Overhead Projektor"
+  },
+  {
+    "id": 17,
+    "image": "BilderZeug/Schachuhr.jpg",
+    "name": "Schachuhr",
+    "pfeil": false,
+    "choices": ["Barometer", "Weltempfänger", "Blutdruckmessgerät", "Weltuhr", "Schachuhr"],
+    "correct_answer": "Schachuhr"
+  },
+  {
+    "id": 18,
+    "image": "BilderZeug/Modem.jpg",
+    "name": "Modem",
+    "pfeil": false,
+    "choices": ["Overhead Projektor", "Modem", "Autoradio", "Höhensonne", "Festplatte"],
+    "correct_answer": "Modem"
+  }
+]
