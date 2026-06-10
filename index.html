@@ -195,6 +195,36 @@
   }
   .pop-in { animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 
+  .timer-ring {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .timer-ring svg { display: block; }
+  .timer-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 3;
+  }
+  .timer-progress {
+    fill: none;
+    stroke: var(--neon-cyan);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.85s linear, stroke 0.3s;
+  }
+  #timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--neon-cyan);
+  }
+
   .share-item-btn {
     background: transparent;
     border: none;
@@ -322,7 +352,17 @@
   <!-- Top bar -->
   <div class="flex items-center justify-between px-4 pt-4 pb-2">
     <div class="retro-font text-xs neon-text-cyan" id="q-counter">1 / 18</div>
-    <div id="streak-display" class="retro-font text-xs text-slate-500"></div>
+    <div class="flex items-center gap-3">
+      <div id="streak-display" class="retro-font text-xs text-slate-500"></div>
+      <div class="timer-ring" id="timer-ring">
+        <svg width="44" height="44" viewBox="0 0 44 44" style="transform: rotate(-90deg)">
+          <circle class="timer-bg" cx="22" cy="22" r="18"/>
+          <circle class="timer-progress" id="timer-progress" cx="22" cy="22" r="18"
+            stroke-dasharray="113.1" stroke-dashoffset="0"/>
+        </svg>
+        <div id="timer-text">15</div>
+      </div>
+    </div>
   </div>
 
   <!-- Progress bar -->
@@ -461,6 +501,11 @@ let loseStreak = 0;
 let userAnswers = [];
 let answersLocked = false;
 
+let timerInterval = null;
+let timeLeft = 15;
+const TIMER_DURATION = 15;
+const TIMER_CIRCUMFERENCE = 2 * Math.PI * 18; // ≈ 113.1
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -530,6 +575,97 @@ document.getElementById('screen-start').addEventListener('touchend', () => {
   if (tapCount >= 3) { tapCount = 0; devSkip(); }
 });
 
+function startTimer() {
+  stopTimer();
+  timeLeft = TIMER_DURATION;
+
+  const progress = document.getElementById('timer-progress');
+  const text = document.getElementById('timer-text');
+
+  progress.style.transition = 'none';
+  progress.style.strokeDashoffset = '0';
+  progress.style.stroke = 'var(--neon-cyan)';
+  text.textContent = '15';
+  text.style.color = 'var(--neon-cyan)';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    progress.style.transition = '';
+  }));
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      stopTimer();
+      handleTimeout();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function updateTimerDisplay() {
+  const progress = document.getElementById('timer-progress');
+  const text = document.getElementById('timer-text');
+  const fraction = timeLeft / TIMER_DURATION;
+
+  progress.style.strokeDashoffset = TIMER_CIRCUMFERENCE * (1 - fraction);
+  text.textContent = timeLeft;
+
+  if (fraction > 0.5) {
+    progress.style.stroke = 'var(--neon-cyan)';
+    text.style.color = 'var(--neon-cyan)';
+  } else if (fraction > 0.25) {
+    progress.style.stroke = 'var(--neon-yellow)';
+    text.style.color = 'var(--neon-yellow)';
+  } else {
+    progress.style.stroke = 'var(--neon-pink)';
+    text.style.color = 'var(--neon-pink)';
+  }
+}
+
+function handleTimeout() {
+  if (answersLocked) return;
+  answersLocked = true;
+
+  const q = questions[currentIndex];
+  loseStreak++;
+  winStreak = 0;
+
+  document.querySelectorAll('.answer-btn').forEach(btn => {
+    if (btn.textContent === q.correct_answer) btn.classList.add('correct');
+    btn.disabled = true;
+  });
+
+  document.getElementById('screen-quiz').classList.add('shake');
+  setTimeout(() => document.getElementById('screen-quiz').classList.remove('shake'), 400);
+
+  userAnswers.push({ question: q, userChoice: null, correct: false });
+
+  const popup = document.getElementById('feedback-popup');
+  const bubble = document.getElementById('feedback-bubble');
+  document.getElementById('feedback-emoji').textContent = '⏰';
+  document.getElementById('feedback-text').textContent = 'Zeit abgelaufen!';
+  bubble.style.borderColor = 'var(--neon-yellow)';
+  bubble.style.boxShadow = '0 0 30px rgba(255,230,0,0.4)';
+  popup.classList.add('show');
+
+  setTimeout(() => {
+    hideFeedback();
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  }, 2000);
+}
+
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
@@ -581,11 +717,13 @@ function renderQuestion() {
   });
 
   updateStreakDisplay();
+  startTimer();
 }
 
 function handleAnswer(choice, btn, q) {
   if (answersLocked) return;
   answersLocked = true;
+  stopTimer();
 
   const isCorrect = choice === q.correct_answer;
 
@@ -681,6 +819,7 @@ function updateStreakDisplay() {
 }
 
 function showResults() {
+  stopTimer();
   showScreen('results');
   document.getElementById('results-phase1').classList.remove('hidden');
   document.getElementById('results-phase1').classList.add('flex');
@@ -755,7 +894,7 @@ function showRevelation() {
         <div class="text-xs text-slate-400 mb-1">Frage ${i + 1}</div>
         <div class="font-bold text-sm text-white mb-2 leading-snug">${q.name}</div>
         <div class="text-sm ${correct ? 'text-green-400' : 'text-red-400'} font-semibold">
-          ${correct ? '✅' : '❌'} Deine Antwort: ${entry.userChoice}
+          ${entry.userChoice === null ? '⏰ Zeit abgelaufen' : `${correct ? '✅' : '❌'} Deine Antwort: ${entry.userChoice}`}
         </div>
         ${!correct ? `<div class="text-sm text-green-400 mt-1">✓ Richtig: ${q.correct_answer}</div>` : ''}
       </div>
