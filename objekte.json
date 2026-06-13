@@ -186,5 +186,21 @@
     "pfeil": false,
     "choices": ["Tauchsieder", "Lockenwickler", "Heizspirale", "Spindler"],
     "correct_answer": "Tauchsieder"
+  },
+  {
+    "id": 23,
+    "image": "BilderZeug/Paternoster.jpg",
+    "name": "Paternoster",
+    "pfeil": false,
+    "choices": ["Paternoster", "Bücherarchiv", "Lastenaufzug", "Müllschacht"],
+    "correct_answer": "Paternoster"
+  },
+  {
+    "id": 24,
+    "image": "BilderZeug/PalmPilot.jpg",
+    "name": "PDA",
+    "pfeil": false,
+    "choices": ["PDA", "Pager", "Feldtelefon", "Walkie Talkie"],
+    "correct_answer": "PDA"
   }
 ]
