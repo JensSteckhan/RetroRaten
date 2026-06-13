@@ -23,7 +23,7 @@ Mobile-first web quiz app. 18 retro objects to identify via multiple choice. Neo
 ## Local dev server
 Node.js on port 8787 — required because `fetch('objekte.json')` needs HTTP (not file://).
 ```
-node -e "const h=require('http'),fs=require('fs'),p=require('path');h.createServer((req,res)=>{let f=p.join('C:/Users/D027576/AI Zeug/RetroRaten',decodeURIComponent(req.url==='/'?'/index.html':req.url));fs.readFile(f,(e,d)=>{if(e)return res.writeHead(404).end();const m={'html':'text/html','json':'application/json','jpg':'image/jpeg'};res.writeHead(200,{'Content-Type':m[f.split('.').pop()]||'text/plain'});res.end(d)})}).listen(8787)"
+node server.js
 ```
 Open: http://localhost:8787
 
@@ -90,7 +90,7 @@ Background: dark grid pattern with subtle cyan lines
 ## Key UX decisions
 - No "Was ist das?" label — removed to save space
 - Pfeil warning banner: single line "⚠️ Worauf zeigt der Pfeil im Bild?"
-- Answer buttons: `padding: 10px 16px` (compact for mobile)
+- Answer buttons: `padding: 8px 14px`, gap between buttons `gap-2` (compact for mobile, fits 5 answers without scrolling)
 - `@media (hover: hover)` on button hover — prevents iOS sticky-hover bug after tap
 - Max 5 answers — fits on mobile without scrolling even with pfeil banner
 - Correct answers revealed only in revelation list at end (not during quiz)

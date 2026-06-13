@@ -81,7 +81,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
     font-weight: 600;
-    padding: 10px 16px;
+    padding: 8px 14px;
     border: 2px solid rgba(0,245,255,0.2);
     border-radius: 8px;
     cursor: pointer;
@@ -322,24 +322,35 @@
       style="background: radial-gradient(ellipse, #ff2d78 0%, transparent 70%);"></div>
   </div>
 
-  <div class="neon-border-cyan card px-6 py-5 mb-10 max-w-sm mx-auto">
-    <p class="text-slate-300 text-base leading-relaxed">
-      <span id="start-count">18</span> Objekte aus einer anderen Zeit.<br>
-      Weißt du, was das war?
+  <div id="load-error" class="hidden card px-6 py-5 mb-10 max-w-sm mx-auto" style="border: 2px solid var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink);">
+    <p class="text-base leading-relaxed" style="color: var(--neon-pink);">
+      ⚠️ Fragen konnten nicht geladen werden.
     </p>
-    <p class="mt-3 text-slate-500 text-sm">
-      Kein Nachschlagen. Kein Schummeln.<br>
-      Nur Bauchgefühl und Restintelligenz.
+    <p class="mt-3 text-slate-400 text-sm">
+      <code>objekte.json</code> fehlt oder enthält ungültiges JSON. Bitte Datei prüfen.
     </p>
   </div>
 
-  <div class="flex gap-3 mb-6 text-xs retro-font text-slate-500">
-    <span>🎮 <span id="start-count-badge">18</span> FRAGEN</span>
-    <span>·</span>
-    <span>⚡ STREAK SYSTEM</span>
-  </div>
+  <div id="start-content">
+    <div class="neon-border-cyan card px-6 py-5 mb-10 max-w-sm mx-auto">
+      <p class="text-slate-300 text-base leading-relaxed">
+        <span id="start-count">18</span> Objekte aus einer anderen Zeit.<br>
+        Weißt du, was das war?
+      </p>
+      <p class="mt-3 text-slate-500 text-sm">
+        Kein Nachschlagen. Kein Schummeln.<br>
+        Nur Bauchgefühl und Restintelligenz.
+      </p>
+    </div>
 
-  <button class="start-btn" onclick="startQuiz()">START</button>
+    <div class="flex gap-3 mb-6 text-xs retro-font text-slate-500">
+      <span>🎮 <span id="start-count-badge">18</span> FRAGEN</span>
+      <span>·</span>
+      <span>⚡ STREAK SYSTEM</span>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">START</button>
+  </div>
 
   <div class="mt-12 retro-font text-xs text-slate-600">
     © 2026 RETRO RATEN v1.0
@@ -390,7 +401,7 @@
     </div>
 
     <!-- Answer buttons -->
-    <div id="answers-container" class="flex flex-col gap-3">
+    <div id="answers-container" class="flex flex-col gap-2">
     </div>
 
   </div>
@@ -507,7 +518,14 @@ let answersLocked = false;
 
 async function init() {
   try { config = await fetch('config.json').then(r => r.json()); } catch {}
-  try { allObjects = await fetch('objekte.json').then(r => r.json()); } catch {}
+  try { allObjects = await fetch('objekte.json').then(r => r.json()); } catch { allObjects = []; }
+
+  if (!Array.isArray(allObjects) || allObjects.length === 0) {
+    document.getElementById('load-error').classList.remove('hidden');
+    document.getElementById('start-content').classList.add('hidden');
+    return;
+  }
+
   const n = Math.min(config.roundSize, allObjects.length);
   document.getElementById('start-count').textContent = n;
   document.getElementById('start-count-badge').textContent = n;
@@ -666,7 +684,6 @@ function handleTimeout() {
   winStreak = 0;
 
   document.querySelectorAll('.answer-btn').forEach(btn => {
-    if (btn.textContent === q.correct_answer) btn.classList.add('correct');
     btn.disabled = true;
   });
 
