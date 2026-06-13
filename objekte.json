@@ -178,5 +178,13 @@
     "pfeil": false,
     "choices": ["5 1/4 Zoll Diskette", "MiniDisc", "Zipdrive", "Großformatfilm"],
     "correct_answer": "5 1/4 Zoll Diskette"
+  },
+  {
+    "id": 22,
+    "image": "BilderZeug/Tauchsieder.jpg",
+    "name": "Tauchsieder",
+    "pfeil": false,
+    "choices": ["Tauchsieder", "Lockenwickler", "Heizspirale", "Spindler"],
+    "correct_answer": "Tauchsieder"
   }
 ]

@@ -14,7 +14,7 @@
     --neon-yellow: #ffe600;
     --dark-bg: #0a0a1a;
     --card-bg: #12122a;
-    --nav-h: 48px;
+    --nav-h: 52px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,11 +25,9 @@
     overflow: hidden;
   }
 
-  /* ── Desktop (hover-capable): nav at top, hidden until hover ── */
-
   .frames {
     position: fixed;
-    inset: 0;
+    inset: 0 0 var(--nav-h) 0;
   }
 
   iframe {
@@ -45,42 +43,27 @@
 
   nav {
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
     height: var(--nav-h);
-    background: rgba(18, 18, 42, 0.92);
+    background: rgba(18, 18, 42, 0.96);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0, 245, 255, 0.15);
+    border-top: 1px solid rgba(0, 245, 255, 0.15);
     display: flex;
-    transform: translateY(-100%);
-    transition: transform 0.2s ease;
     z-index: 100;
-  }
-
-  nav.visible {
-    transform: translateY(0);
-  }
-
-  /* invisible strip at top that triggers the nav on desktop */
-  #trigger {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 16px;
-    z-index: 99;
   }
 
   .tab {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 5px;
     font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
+    font-size: 7px;
     color: rgba(255, 255, 255, 0.35);
     cursor: pointer;
     border: none;
@@ -91,11 +74,10 @@
     position: relative;
   }
 
-  /* active indicator at bottom for top nav (desktop) */
   .tab::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 10%;
     right: 10%;
     height: 2px;
@@ -113,36 +95,8 @@
   }
 
   .tab-icon {
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1;
-  }
-
-  /* ── Mobile (touch / no hover): nav at bottom, always visible ── */
-  @media (hover: none) {
-    .frames {
-      inset: 0 0 var(--nav-h) 0;
-    }
-
-    #trigger {
-      display: none;
-    }
-
-    nav {
-      top: auto;
-      bottom: 0;
-      border-bottom: none;
-      border-top: 1px solid rgba(0, 245, 255, 0.15);
-      transform: none;
-      transition: none;
-      /* always visible — override .visible logic */
-      transform: translateY(0) !important;
-    }
-
-    /* active indicator at top for bottom nav (mobile) */
-    .tab::after {
-      bottom: auto;
-      top: 0;
-    }
   }
 </style>
 </head>
@@ -153,12 +107,10 @@
   <iframe id="frame-impressum" src="impressum.html"></iframe>
 </div>
 
-<div id="trigger"></div>
-
-<nav id="nav">
+<nav>
   <button class="tab active" id="tab-game" onclick="switchTab('game')">
     <span class="tab-icon">🕹️</span>
-    RetroRaten
+    Retro Raten
   </button>
   <button class="tab" id="tab-impressum" onclick="switchTab('impressum')">
     <span class="tab-icon">📄</span>
@@ -167,41 +119,11 @@
 </nav>
 
 <script>
-  fetch('config.json')
-    .then(r => r.json())
-    .then(cfg => { if (!cfg.tabs) window.location.replace('retroraten.html'); })
-    .catch(() => {});
-
-  const nav = document.getElementById('nav');
-  const isMobile = window.matchMedia('(hover: none)').matches;
-
-  let nearTop = false;
-  let onNav = false;
-
-  function update() {
-    nav.classList.toggle('visible', nearTop || onNav);
-  }
-
-  if (!isMobile) {
-    document.addEventListener('mousemove', (e) => {
-      nearTop = e.clientY < 60;
-      update();
-    });
-
-    nav.addEventListener('mouseenter', () => { onNav = true; update(); });
-    nav.addEventListener('mouseleave', () => { onNav = false; update(); });
-  }
-
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     document.getElementById('frame-' + name).classList.add('active');
-    if (!isMobile) {
-      nearTop = false;
-      onNav = false;
-      update();
-    }
   }
 </script>
 
