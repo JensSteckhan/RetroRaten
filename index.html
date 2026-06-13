@@ -14,7 +14,7 @@
     --neon-yellow: #ffe600;
     --dark-bg: #0a0a1a;
     --card-bg: #12122a;
-    --nav-h: 52px;
+    --nav-h: 36px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,10 +58,8 @@
   .tab {
     flex: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     font-family: 'Press Start 2P', monospace;
     font-size: 7px;
     color: rgba(255, 255, 255, 0.35);
@@ -94,10 +92,6 @@
     box-shadow: 0 0 8px var(--neon-cyan);
   }
 
-  .tab-icon {
-    font-size: 16px;
-    line-height: 1;
-  }
 </style>
 </head>
 <body>
@@ -108,14 +102,8 @@
 </div>
 
 <nav>
-  <button class="tab active" id="tab-game" onclick="switchTab('game')">
-    <span class="tab-icon">🕹️</span>
-    Retro Raten
-  </button>
-  <button class="tab" id="tab-impressum" onclick="switchTab('impressum')">
-    <span class="tab-icon">📄</span>
-    Impressum
-  </button>
+  <button class="tab active" id="tab-game" onclick="switchTab('game')">Retro Raten</button>
+  <button class="tab" id="tab-impressum" onclick="switchTab('impressum')">Impressum</button>
 </nav>
 
 <script>
