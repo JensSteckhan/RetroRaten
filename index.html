@@ -167,6 +167,11 @@
 </nav>
 
 <script>
+  fetch('config.json')
+    .then(r => r.json())
+    .then(cfg => { if (!cfg.tabs) window.location.replace('retroraten.html'); })
+    .catch(() => {});
+
   const nav = document.getElementById('nav');
   const isMobile = window.matchMedia('(hover: none)').matches;
 

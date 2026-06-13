@@ -154,29 +154,5 @@
     "pfeil": false,
     "choices": ["Overhead Projektor", "Modem", "Autoradio", "Höhensonne", "Festplatte"],
     "correct_answer": "Modem"
-  },
-  {
-    "id": 19,
-    "image": "BilderZeug/Weltempfaenger.jpg",
-    "name": "Weltempfänger",
-    "pfeil": false,
-    "choices": ["Weltempfänger", "Höhensonne", "Feldstecher", "Radarwarner"],
-    "correct_answer": "Weltempfänger"
-  },
-  {
-    "id": 20,
-    "image": "BilderZeug/MiniDisc.jpg",
-    "name": "MiniDisc-Rekorder",
-    "pfeil": false,
-    "choices": ["MiniDisc-Rekorder", "ZipDrive", "Walkman", "Disketten-Laufwerk"],
-    "correct_answer": "MiniDisc-Rekorder"
-  },
-  {
-    "id": 21,
-    "image": "BilderZeug/FloppyDisk.jpg",
-    "name": "5 1/4 Zoll Diskette",
-    "pfeil": false,
-    "choices": ["5 1/4 Zoll Diskette", "MiniDisc", "Zipdrive", "Großformatfilm"],
-    "correct_answer": "5 1/4 Zoll Diskette"
   }
 ]
