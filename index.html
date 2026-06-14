@@ -355,6 +355,10 @@
   <div class="mt-12 retro-font text-xs text-slate-600">
     © 2026 RETRO RATEN v1.0
   </div>
+
+  <div id="impressum-footer" style="display:none; margin-top:12px;">
+    <a href="impressum.html" style="font-size:10px; color:rgba(0,245,255,0.45); text-decoration:none; font-family:'Inter',sans-serif; letter-spacing:0.05em;">Impressum</a>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ QUIZ SCREEN -->
@@ -505,7 +509,7 @@ const TIER_TITLES = [
 ];
 
 let allObjects = [];
-let config = { tabs: true, roundSize: 18 };
+let config = { tabs: true, roundSize: 18, showImpressumLink: false };
 const SEEN_KEY = 'retroraten_seen_ids';
 
 let questions = [];
@@ -529,6 +533,10 @@ async function init() {
   const n = Math.min(config.roundSize, allObjects.length);
   document.getElementById('start-count').textContent = n;
   document.getElementById('start-count-badge').textContent = n;
+
+  if (config.showImpressumLink) {
+    document.getElementById('impressum-footer').style.display = 'block';
+  }
 }
 
 init();
