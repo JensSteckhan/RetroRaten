@@ -210,5 +210,13 @@
     "pfeil": false,
     "choices": ["Überweisungsformular", "Lochkarte", "Travellerscheck", "Lebensmittelschein"],
     "correct_answer": "Überweisungsformular"
+  },
+  {
+    "id": 26,
+    "image": "BilderZeug/Fritzchen.jpg",
+    "name": "Mainzelmännchen",
+    "pfeil": false,
+    "choices": ["Mainzelmännchen", "Monchhichi", "Olympia Maskottchen", "Gremlin"],
+    "correct_answer": "Mainzelmännchen"
   }
 ]
