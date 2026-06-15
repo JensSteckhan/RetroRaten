@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Raten</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a1a'/><text x='16' y='24' font-family='monospace' font-weight='900' font-size='17' text-anchor='middle' letter-spacing='-1'><tspan fill='%23ff2d78'>R</tspan><tspan fill='%23ffe600'>R</tspan></text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700;900&display=swap');
+
+  :root {
+    --neon-pink: #ff2d78;
+    --neon-cyan: #00f5ff;
+    --neon-yellow: #ffe600;
+    --neon-green: #39ff14;
+    --dark-bg: #0a0a1a;
+    --card-bg: #12122a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background-color: var(--dark-bg);
+    background-image:
+      linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    min-height: 100dvh;
+    font-family: 'Inter', sans-serif;
+    color: white;
+    overflow-x: hidden;
+  }
+
+  .retro-font { font-family: 'Press Start 2P', monospace; }
+
+  .neon-text-pink {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 60px var(--neon-pink);
+  }
+  .neon-text-cyan {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+  }
+  .neon-text-yellow {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px var(--neon-yellow), 0 0 30px var(--neon-yellow);
+  }
+
+  .neon-border-cyan {
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 10px var(--neon-cyan), inset 0 0 10px rgba(0,245,255,0.05);
+  }
+
+  .start-btn {
+    background: var(--neon-pink);
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    padding: 18px 48px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 0 20px var(--neon-pink), 0 6px 0 #8b0038, 0 8px 15px rgba(255,45,120,0.4);
+    transform: translateY(0);
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    top: 0;
+  }
+  .start-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 20px var(--neon-pink), 0 2px 0 #8b0038, 0 4px 8px rgba(255,45,120,0.4);
+    top: 4px;
+  }
+
+  .answer-btn {
+    background: var(--card-bg);
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: 2px solid rgba(0,245,255,0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    position: relative;
+  }
+  .answer-btn:active { transform: scale(0.98); }
+  @media (hover: hover) {
+    .answer-btn:hover { border-color: var(--neon-cyan); background: rgba(0,245,255,0.05); }
+  }
+  .answer-btn.correct { border-color: var(--neon-green); background: rgba(57,255,20,0.12); color: var(--neon-green); }
+  .answer-btn.wrong { border-color: var(--neon-pink); background: rgba(255,45,120,0.12); color: var(--neon-pink); }
+  .answer-btn:disabled { cursor: default; }
+
+  .screen { display: none; }
+  .screen.active { display: flex; }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+  }
+
+  /* Scanline overlay */
+  .scanlines::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Feedback popup */
+  .feedback-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+    z-index: 200;
+    pointer-events: none;
+    max-width: 85vw;
+  }
+  .feedback-popup.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px var(--neon-cyan);
+  }
+
+  .pixel-corner {
+    position: relative;
+  }
+  .pixel-corner::before,
+  .pixel-corner::after {
+    content: '▮';
+    font-size: 8px;
+    position: absolute;
+    color: var(--neon-cyan);
+    opacity: 0.6;
+  }
+  .pixel-corner::before { top: -12px; left: 0; }
+  .pixel-corner::after { bottom: -12px; right: 0; }
+
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.7; }
+    98% { opacity: 0.9; }
+  }
+  .flicker { animation: flicker 4s infinite; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .blink { animation: blink 1s step-end infinite; }
+
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .slide-up { animation: slideUp 0.35s ease forwards; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .shake { animation: shake 0.4s ease; }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .pop-in { animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+  .timer-ring {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .timer-ring svg { display: block; }
+  .timer-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 3;
+  }
+  .timer-progress {
+    fill: none;
+    stroke: var(--neon-cyan);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.85s linear, stroke 0.3s;
+  }
+  #timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--neon-cyan);
+  }
+
+  .share-item-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.25);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    transition: color 0.15s;
+  }
+  .share-item-btn:active { color: var(--neon-cyan); }
+
+  #img-preview-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.93);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  #img-preview-overlay.visible { display: flex; }
+  #img-preview-overlay img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 30px var(--neon-cyan);
+  }
+
+  .result-row {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* Pfeil arrow indicator */
+  .pfeil-marker {
+    position: absolute;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translate(-50%, calc(-100% - 2px));
+  }
+  .pfeil-marker .arrow-icon {
+    font-size: 28px;
+    color: #ffe600;
+    text-shadow:
+      1px 1px 0 #000, -1px -1px 0 #000,
+      1px -1px 0 #000, -1px  1px 0 #000,
+      2px 2px 0 #000, -2px -2px 0 #000,
+      2px -2px 0 #000, -2px  2px 0 #000,
+      0 0 10px rgba(0,0,0,0.7);
+    animation: pfeil-bounce 0.65s ease-in-out infinite alternate;
+    line-height: 1;
+  }
+  .pfeil-marker .arrow-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ffe600;
+    box-shadow: 0 0 0 2px #000, 0 0 6px rgba(0,0,0,0.6);
+    animation: pfeil-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pfeil-bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(7px); }
+  }
+  @keyframes pfeil-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.6); }
+  }
+</style>
+</head>
+<body class="scanlines">
+
+<!-- ═══════════════════════════════════════════════════════ START SCREEN -->
+<div id="screen-start" class="screen active flex-col items-center justify-center min-h-dvh px-6 py-12 text-center">
+
+  <div class="mb-2 retro-font text-xs neon-text-cyan tracking-widest opacity-70">
+    <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
+  </div>
+
+  <div class="my-8 relative">
+    <div class="retro-font text-2xl sm:text-3xl neon-text-pink flicker leading-loose">
+      RETRO
+    </div>
+    <div class="retro-font text-2xl sm:text-3xl neon-text-yellow flicker leading-loose" style="animation-delay:0.3s">
+      RATEN
+    </div>
+    <div class="absolute -inset-4 opacity-10 pointer-events-none"
+      style="background: radial-gradient(ellipse, #ff2d78 0%, transparent 70%);"></div>
+  </div>
+
+  <div id="load-error" class="hidden card px-6 py-5 mb-10 max-w-sm mx-auto" style="border: 2px solid var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink);">
+    <p class="text-base leading-relaxed" style="color: var(--neon-pink);">
+      ⚠️ Fragen konnten nicht geladen werden.
+    </p>
+    <p class="mt-3 text-slate-400 text-sm">
+      <code>objekte.json</code> fehlt oder enthält ungültiges JSON. Bitte Datei prüfen.
+    </p>
+  </div>
+
+  <div id="start-content">
+    <div class="neon-border-cyan card px-6 py-5 mb-10 max-w-sm mx-auto">
+      <p class="text-slate-300 text-base leading-relaxed">
+        <span id="start-count">18</span> Objekte aus einer anderen Zeit.<br>
+        Weißt du, was das war?
+      </p>
+      <p class="mt-3 text-slate-500 text-sm">
+        Kein Nachschlagen. Kein Schummeln.<br>
+        Nur Bauchgefühl und Restintelligenz.
+      </p>
+    </div>
+
+    <div class="flex gap-3 mb-6 text-xs retro-font text-slate-500">
+      <span>🎮 <span id="start-count-badge">18</span> FRAGEN</span>
+      <span>·</span>
+      <span>⚡ STREAK SYSTEM</span>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">START</button>
+  </div>
+
+  <div class="mt-12 retro-font text-xs text-slate-600">
+    © 2026 RETRO RATEN v1.0
+  </div>
+
+  <div id="impressum-footer" style="display:none; margin-top:12px;">
+    <a href="impressum.html" style="font-size:10px; color:rgba(0,245,255,0.45); text-decoration:none; font-family:'Inter',sans-serif; letter-spacing:0.05em;">Impressum</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ QUIZ SCREEN -->
+<div id="screen-quiz" class="screen flex-col min-h-dvh">
+
+  <!-- Top bar -->
+  <div class="flex items-center justify-between px-4 pt-4 pb-2">
+    <div class="retro-font text-xs neon-text-cyan" id="q-counter">1 / 18</div>
+    <div class="flex items-center gap-3">
+      <div id="streak-display" class="retro-font text-xs text-slate-500"></div>
+      <div class="timer-ring" id="timer-ring">
+        <svg width="44" height="44" viewBox="0 0 44 44" style="transform: rotate(-90deg)">
+          <circle class="timer-bg" cx="22" cy="22" r="18"/>
+          <circle class="timer-progress" id="timer-progress" cx="22" cy="22" r="18"
+            stroke-dasharray="113.1" stroke-dashoffset="0"/>
+        </svg>
+        <div id="timer-text">15</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="px-4 mb-4">
+    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+      <div class="progress-bar-inner" id="progress-bar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="flex-1 px-4 pb-6 flex flex-col gap-4 max-w-lg mx-auto w-full">
+
+    <!-- Pfeil warning -->
+    <div id="pfeil-warning" class="hidden items-center gap-2 bg-yellow-950 border border-yellow-500 rounded-xl px-4 py-2">
+      <p class="text-yellow-300 text-sm font-semibold">⚠️ Worauf zeigt der Pfeil im Bild?</p>
+    </div>
+
+    <!-- Image card -->
+    <div class="card overflow-hidden rounded-2xl neon-border-cyan relative" style="aspect-ratio: 4/3;">
+      <img id="q-image" src="" alt="Objekt" class="w-full h-full object-contain bg-slate-900 p-2">
+      <div id="pfeil-marker" class="pfeil-marker hidden">
+        <div class="arrow-icon">▼</div>
+        <div class="arrow-dot"></div>
+      </div>
+    </div>
+
+    <!-- Answer buttons -->
+    <div id="answers-container" class="flex flex-col gap-2">
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ RESULTS SCREEN -->
+<div id="screen-results" class="screen flex-col min-h-dvh px-4 py-8 max-w-lg mx-auto w-full">
+
+  <!-- Phase 1: Score + title -->
+  <div id="results-phase1" class="flex flex-col items-center justify-center flex-1 text-center">
+    <div class="retro-font text-xs neon-text-cyan mb-6 tracking-widest">GAME OVER</div>
+    <div class="retro-font text-5xl neon-text-yellow mb-4 flicker" id="result-score">0 / 18</div>
+    <div class="card neon-border-cyan px-8 py-5 mt-2 mb-10">
+      <div class="retro-font text-base neon-text-pink" id="result-title">-</div>
+    </div>
+    <button class="start-btn" onclick="showRevelation()">Auflösung anzeigen →</button>
+  </div>
+
+  <!-- Phase 2: Revelation list (hidden initially) -->
+  <div id="results-phase2" class="hidden flex-col w-full">
+    <div class="retro-font text-xs neon-text-cyan mb-4 text-center tracking-widest">AUFLÖSUNG</div>
+    <div id="results-list" class="flex flex-col gap-3 pb-4"></div>
+    <div class="text-center mt-6 pb-10">
+      <button class="start-btn" onclick="restartQuiz()">NOCHMAL</button>
+    </div>
+  </div><!-- end phase2 -->
+</div><!-- end screen-results -->
+
+<!-- ═══════════════════════════════════════════════════════ IMAGE PREVIEW -->
+<div id="img-preview-overlay">
+  <img id="img-preview-img" src="" alt="">
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ FEEDBACK POPUP -->
+<div id="feedback-popup" class="feedback-popup">
+  <div id="feedback-bubble" class="card px-6 py-5 text-center max-w-xs rounded-2xl border-2">
+    <div id="feedback-emoji" class="text-4xl mb-2"></div>
+    <div id="feedback-text" class="font-bold text-lg leading-snug"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SCRIPT -->
+<script>
+const FEEDBACK = {
+  correct: [
+    { emoji: "🔥", text: "Sauber. Das sitzt." },
+    { emoji: "💅", text: "Zu leicht für dich. Fast schon unfair." },
+    { emoji: "🧠", text: "Braincell activated." },
+    { emoji: "⚡", text: "Zack! Kein Zögern. Respect." },
+    { emoji: "🎯", text: "Korrekt. Keine Widerrede." },
+    { emoji: "✅", text: "Okay, du bist nicht lost." },
+    { emoji: "🤌", text: "Chefmäßig beantwortet." },
+    { emoji: "👾", text: "Retro-Wissen unlocked." },
+    { emoji: "😎", text: "Cool wie ein Kühlschrank von 1987." },
+    { emoji: "📻", text: "Tuned in. Richtig." },
+    { emoji: "💡", text: "Boomer-Energie im positiven Sinne." },
+    { emoji: "🏆", text: "Top-Tier Antwort. Nicht zu leugnen." },
+    { emoji: "🎮", text: "+1 Punkt. Insert coin for more." },
+    { emoji: "🌟", text: "Makellos. Keine Diskussion." },
+    { emoji: "🤓", text: "Du hast eindeutig zu viele Museen besucht." },
+  ],
+  wrong: [
+    { emoji: "💀", text: "Nicht mal ansatzweise nah dran." },
+    { emoji: "🫠", text: "Schmerzhaft falsch." },
+    { emoji: "😬", text: "Oof. Das war nichts." },
+    { emoji: "🤡", text: "Das war keine gute Entscheidung." },
+    { emoji: "📉", text: "Dein Retro-IQ sinkt gerade sichtbar." },
+    { emoji: "🗑️", text: "Das geht zurück in den Müll der Geschichte." },
+    { emoji: "😵", text: "Nicht mal die Hälfte wäre so falsch gewesen." },
+    { emoji: "🧻", text: "Smooth wie Toilettenpapier von 1983." },
+    { emoji: "🤦", text: "Deine Oma schüttelt gerade den Kopf." },
+    { emoji: "🕹️", text: "GAME OVER wäre gnädiger." },
+    { emoji: "📞", text: "Ruf einen Boomer an. Sofort." },
+    { emoji: "🚫", text: "Nein. Nein. Nein." },
+    { emoji: "😂", text: "Diese Antwort ist illegal." },
+    { emoji: "🫥", text: "So falsch, es ist schon wieder interessant." },
+    { emoji: "🏳️", text: "Aufgeben wäre eine Option gewesen." },
+  ],
+  streak_win: [
+    { emoji: "🔥🔥", text: "STREAK x2 — Du bist auf Feuer!" },
+    { emoji: "⚡⚡⚡", text: "STREAK x3 — Unkillable!" },
+    { emoji: "🚀", text: "STREAK x4 — Retro-Gott Modus aktiviert!" },
+    { emoji: "👑🔥", text: "STREAK x5+ — Das ist absurd. Du bist absurd." },
+    { emoji: "🌋", text: "STREAK x6+ — Bitte hör auf. Es ist unfair." },
+  ],
+  streak_lose: [
+    { emoji: "💀💀", text: "2 falsch — Läuft... nicht so." },
+    { emoji: "📉📉", text: "3 falsch — Verloren in der Vergangenheit." },
+    { emoji: "🪦", text: "4 falsch — Das Museum weint für dich." },
+    { emoji: "😭💀", text: "5+ falsch — Historisch betrachtet eine Katastrophe." },
+    { emoji: "🏳️💀", text: "6+ falsch — Boomer würden nicht mal lachen. Nur Mitleid." },
+  ],
+};
+
+const TIER_TITLES = [
+  { min: 0,  max: 4,  title: "Digital Native" },
+  { min: 5,  max: 9,  title: "Halbwissen-Held" },
+  { min: 10, max: 14, title: "Retro-Checker" },
+  { min: 15, max: 17, title: "Dinge-Detektiv" },
+  { min: 18, max: 18, title: "Zeitmaschinen-Chef" },
+];
+
+let allObjects = [];
+let config = { tabs: true, roundSize: 18, showImpressumLink: false };
+const SEEN_KEY = 'retroraten_seen_ids';
+
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let winStreak = 0;
+let loseStreak = 0;
+let userAnswers = [];
+let answersLocked = false;
+
+async function init() {
+  try { config = await fetch('config.json').then(r => r.json()); } catch {}
+  try { allObjects = await fetch('objekte.json').then(r => r.json()); } catch { allObjects = []; }
+
+  if (!Array.isArray(allObjects) || allObjects.length === 0) {
+    document.getElementById('load-error').classList.remove('hidden');
+    document.getElementById('start-content').classList.add('hidden');
+    return;
+  }
+
+  const n = Math.min(config.roundSize, allObjects.length);
+  document.getElementById('start-count').textContent = n;
+  document.getElementById('start-count-badge').textContent = n;
+
+  if (config.showImpressumLink) {
+    document.getElementById('impressum-footer').style.display = 'block';
+  }
+}
+
+init();
+
+function pickRoundObjects() {
+  const n = Math.min(config.roundSize, allObjects.length);
+  if (n >= allObjects.length) return shuffle([...allObjects]);
+
+  let seenIds;
+  try { seenIds = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'); }
+  catch { seenIds = []; }
+
+  const unseenPool = shuffle(allObjects.filter(o => !seenIds.includes(o.id)));
+  const seenPool   = shuffle(allObjects.filter(o =>  seenIds.includes(o.id)));
+  const selected   = [...unseenPool, ...seenPool].slice(0, n);
+
+  const newSeen = [...new Set([...seenIds, ...selected.map(o => o.id)])];
+  try {
+    localStorage.setItem(SEEN_KEY,
+      newSeen.length >= allObjects.length ? '[]' : JSON.stringify(newSeen));
+  } catch {}
+
+  return selected;
+}
+
+let timerInterval = null;
+let timeLeft = 15;
+const TIMER_DURATION = 15;
+const TIMER_CIRCUMFERENCE = 2 * Math.PI * 18; // ≈ 113.1
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Cycles through all texts before any can repeat
+const bags = { correct: [], wrong: [] };
+function pickBag(key) {
+  if (bags[key].length === 0) bags[key] = shuffle([...FEEDBACK[key]]);
+  return bags[key].pop();
+}
+
+function startQuiz() {
+  questions = pickRoundObjects();
+  currentIndex = 0;
+  score = 0;
+  winStreak = 0;
+  loseStreak = 0;
+  userAnswers = [];
+  bags.correct = [];
+  bags.wrong = [];
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+
+function devSkip() {
+  if (!document.getElementById('screen-start').classList.contains('active')) return;
+  if (!allObjects.length) return;
+  questions = pickRoundObjects();
+  currentIndex = 0; score = 0; winStreak = 0; loseStreak = 0;
+  userAnswers = []; bags.correct = []; bags.wrong = [];
+  questions.forEach(q => {
+    const choice = q.choices[Math.floor(Math.random() * q.choices.length)];
+    const correct = choice === q.correct_answer;
+    if (correct) { score++; winStreak++; loseStreak = 0; }
+    else { loseStreak++; winStreak = 0; }
+    userAnswers.push({ question: q, userChoice: choice, correct });
+  });
+  currentIndex = questions.length;
+  showScreen('results');
+  showResults();
+}
+
+// Q key on desktop
+document.addEventListener('keydown', e => { if (e.key === 'q' || e.key === 'Q') devSkip(); });
+
+// Triple-tap on title area (mobile)
+let tapCount = 0, tapTimer = null;
+document.getElementById('screen-start').addEventListener('touchend', () => {
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => { tapCount = 0; }, 600);
+  if (tapCount >= 3) { tapCount = 0; devSkip(); }
+});
+
+function startTimer() {
+  stopTimer();
+  timeLeft = TIMER_DURATION;
+
+  const progress = document.getElementById('timer-progress');
+  const text = document.getElementById('timer-text');
+
+  progress.style.transition = 'none';
+  progress.style.strokeDashoffset = '0';
+  progress.style.stroke = 'var(--neon-cyan)';
+  text.textContent = '15';
+  text.style.color = 'var(--neon-cyan)';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    progress.style.transition = '';
+  }));
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      stopTimer();
+      handleTimeout();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function updateTimerDisplay() {
+  const progress = document.getElementById('timer-progress');
+  const text = document.getElementById('timer-text');
+  const fraction = timeLeft / TIMER_DURATION;
+
+  progress.style.strokeDashoffset = TIMER_CIRCUMFERENCE * (1 - fraction);
+  text.textContent = timeLeft;
+
+  if (fraction > 0.5) {
+    progress.style.stroke = 'var(--neon-cyan)';
+    text.style.color = 'var(--neon-cyan)';
+  } else if (fraction > 0.25) {
+    progress.style.stroke = 'var(--neon-yellow)';
+    text.style.color = 'var(--neon-yellow)';
+  } else {
+    progress.style.stroke = 'var(--neon-pink)';
+    text.style.color = 'var(--neon-pink)';
+  }
+}
+
+function handleTimeout() {
+  if (answersLocked) return;
+  answersLocked = true;
+
+  const q = questions[currentIndex];
+  loseStreak++;
+  winStreak = 0;
+
+  document.querySelectorAll('.answer-btn').forEach(btn => {
+    btn.disabled = true;
+  });
+
+  document.getElementById('screen-quiz').classList.add('shake');
+  setTimeout(() => document.getElementById('screen-quiz').classList.remove('shake'), 400);
+
+  userAnswers.push({ question: q, userChoice: null, correct: false });
+
+  const popup = document.getElementById('feedback-popup');
+  const bubble = document.getElementById('feedback-bubble');
+  document.getElementById('feedback-emoji').textContent = '⏰';
+  document.getElementById('feedback-text').textContent = 'Zeit abgelaufen!';
+  bubble.style.borderColor = 'var(--neon-yellow)';
+  bubble.style.boxShadow = '0 0 30px rgba(255,230,0,0.4)';
+  popup.classList.add('show');
+
+  setTimeout(() => {
+    hideFeedback();
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  }, 2000);
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+function renderQuestion() {
+  const q = questions[currentIndex];
+  answersLocked = false;
+
+  document.getElementById('q-counter').textContent = `${currentIndex + 1} / ${questions.length}`;
+  document.getElementById('progress-bar').style.width = `${(currentIndex / questions.length) * 100}%`;
+
+  const pfeilWarning = document.getElementById('pfeil-warning');
+  if (q.pfeil) {
+    pfeilWarning.classList.remove('hidden');
+    pfeilWarning.classList.add('flex');
+  } else {
+    pfeilWarning.classList.add('hidden');
+    pfeilWarning.classList.remove('flex');
+  }
+
+  const img = document.getElementById('q-image');
+  img.src = q.image;
+  img.classList.remove('slide-up');
+  void img.offsetWidth;
+  img.classList.add('slide-up');
+
+  const marker = document.getElementById('pfeil-marker');
+  if (q.pfeil && q.pfeil_x != null && q.pfeil_y != null) {
+    marker.style.left = q.pfeil_x + '%';
+    marker.style.top  = q.pfeil_y + '%';
+    marker.classList.remove('hidden');
+  } else {
+    marker.classList.add('hidden');
+  }
+
+  const container = document.getElementById('answers-container');
+  container.innerHTML = '';
+
+  // Shuffle choices
+  const shuffled = [...q.choices].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn slide-up';
+    btn.textContent = choice;
+    btn.onclick = () => handleAnswer(choice, btn, q);
+    container.appendChild(btn);
+  });
+
+  updateStreakDisplay();
+  startTimer();
+}
+
+function handleAnswer(choice, btn, q) {
+  if (answersLocked) return;
+  answersLocked = true;
+  stopTimer();
+
+  const isCorrect = choice === q.correct_answer;
+
+  if (isCorrect) {
+    score++;
+    winStreak++;
+    loseStreak = 0;
+    btn.classList.add('correct');
+  } else {
+    loseStreak++;
+    winStreak = 0;
+    btn.classList.add('wrong');
+    document.getElementById('screen-quiz').classList.add('shake');
+    setTimeout(() => document.getElementById('screen-quiz').classList.remove('shake'), 400);
+  }
+
+  // Disable all buttons
+  document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+
+  userAnswers.push({ question: q, userChoice: choice, correct: isCorrect });
+
+  showFeedback(isCorrect);
+
+  setTimeout(() => {
+    hideFeedback();
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  }, 2000);
+}
+
+function showFeedback(isCorrect) {
+  let feedback;
+
+  if (isCorrect && winStreak >= 6) {
+    feedback = FEEDBACK.streak_win[4];
+  } else if (isCorrect && winStreak === 5) {
+    feedback = FEEDBACK.streak_win[3];
+  } else if (isCorrect && winStreak === 4) {
+    feedback = FEEDBACK.streak_win[2];
+  } else if (isCorrect && winStreak === 3) {
+    feedback = FEEDBACK.streak_win[1];
+  } else if (isCorrect && winStreak === 2) {
+    feedback = FEEDBACK.streak_win[0];
+  } else if (!isCorrect && loseStreak >= 6) {
+    feedback = FEEDBACK.streak_lose[4];
+  } else if (!isCorrect && loseStreak === 5) {
+    feedback = FEEDBACK.streak_lose[3];
+  } else if (!isCorrect && loseStreak === 4) {
+    feedback = FEEDBACK.streak_lose[2];
+  } else if (!isCorrect && loseStreak === 3) {
+    feedback = FEEDBACK.streak_lose[1];
+  } else if (!isCorrect && loseStreak === 2) {
+    feedback = FEEDBACK.streak_lose[0];
+  } else {
+    feedback = pickBag(isCorrect ? 'correct' : 'wrong');
+  }
+
+  const popup = document.getElementById('feedback-popup');
+  const bubble = document.getElementById('feedback-bubble');
+  document.getElementById('feedback-emoji').textContent = feedback.emoji;
+  document.getElementById('feedback-text').textContent = feedback.text;
+
+  if (isCorrect) {
+    bubble.style.borderColor = 'var(--neon-green)';
+    bubble.style.boxShadow = '0 0 30px rgba(57,255,20,0.4)';
+  } else {
+    bubble.style.borderColor = 'var(--neon-pink)';
+    bubble.style.boxShadow = '0 0 30px rgba(255,45,120,0.4)';
+  }
+
+  popup.classList.add('show');
+}
+
+function hideFeedback() {
+  document.getElementById('feedback-popup').classList.remove('show');
+}
+
+function updateStreakDisplay() {
+  const el = document.getElementById('streak-display');
+  if (winStreak >= 2) {
+    el.textContent = `🔥 ${winStreak} STREAK`;
+    el.style.color = 'var(--neon-yellow)';
+  } else if (loseStreak >= 2) {
+    el.textContent = `💀 ${loseStreak} MISS`;
+    el.style.color = 'var(--neon-pink)';
+  } else {
+    el.textContent = '';
+  }
+}
+
+function showResults() {
+  stopTimer();
+  showScreen('results');
+  document.getElementById('results-phase1').classList.remove('hidden');
+  document.getElementById('results-phase1').classList.add('flex');
+  document.getElementById('results-phase2').classList.add('hidden');
+  document.getElementById('results-phase2').classList.remove('flex');
+
+  document.getElementById('result-score').textContent = `${score} / ${questions.length}`;
+  const tier = TIER_TITLES.find(t => score >= t.min && score <= t.max);
+  document.getElementById('result-title').textContent = tier ? tier.title : '-';
+}
+
+function showToast(emoji, text) {
+  const popup = document.getElementById('feedback-popup');
+  const bubble = document.getElementById('feedback-bubble');
+  document.getElementById('feedback-emoji').textContent = emoji;
+  document.getElementById('feedback-text').textContent = text;
+  bubble.style.borderColor = 'var(--neon-cyan)';
+  bubble.style.boxShadow = '0 0 30px rgba(0,245,255,0.3)';
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 1500);
+}
+
+function shareItem(q, imgFile) {
+  const text = `Was ist das? 🤔\n${q.choices.join(' · ')}`;
+
+  if (!navigator.share) {
+    showToast('ℹ️', 'Teilen nur per HTTPS verfügbar');
+    return;
+  }
+
+  if (imgFile && navigator.canShare && navigator.canShare({ files: [imgFile] })) {
+    navigator.share({ files: [imgFile], text })
+      .catch(err => { if (err.name !== 'AbortError') showToast('❌', 'Teilen fehlgeschlagen'); });
+  } else {
+    navigator.share({ text })
+      .catch(err => { if (err.name !== 'AbortError') showToast('❌', 'Teilen fehlgeschlagen'); });
+  }
+}
+
+function showImgPreview(src) {
+  document.getElementById('img-preview-img').src = src;
+  document.getElementById('img-preview-overlay').classList.add('visible');
+}
+
+function hideImgPreview() {
+  document.getElementById('img-preview-overlay').classList.remove('visible');
+}
+
+function showRevelation() {
+  document.getElementById('results-phase1').classList.add('hidden');
+  document.getElementById('results-phase1').classList.remove('flex');
+  document.getElementById('results-phase2').classList.remove('hidden');
+  document.getElementById('results-phase2').classList.add('flex');
+
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+
+  userAnswers.forEach((entry, i) => {
+    const q = entry.question;
+    const correct = entry.correct;
+    const row = document.createElement('div');
+    row.className = 'result-row card p-4 flex gap-3 items-start pop-in';
+    row.style.animationDelay = `${i * 0.04}s`;
+    row.style.opacity = '0';
+    row.style.border = correct
+      ? '1px solid rgba(57,255,20,0.3)'
+      : '1px solid rgba(255,45,120,0.3)';
+    row.innerHTML = `
+      <img src="${q.image}" alt="${q.name}"
+        class="w-16 h-16 object-contain rounded-lg bg-slate-800 flex-shrink-0 p-1 cursor-pointer">
+      <div class="flex-1 min-w-0">
+        <div class="text-xs text-slate-400 mb-1">Frage ${i + 1}</div>
+        <div class="font-bold text-sm text-white mb-2 leading-snug">${q.name}</div>
+        <div class="text-sm ${correct ? 'text-green-400' : 'text-red-400'} font-semibold">
+          ${entry.userChoice === null ? '⏰ Zeit abgelaufen' : `${correct ? '✅' : '❌'} Deine Antwort: ${entry.userChoice}`}
+        </div>
+        ${!correct ? `<div class="text-sm text-green-400 mt-1">✓ Richtig: ${q.correct_answer}</div>` : ''}
+      </div>
+      <button class="share-item-btn" aria-label="Teilen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+      </button>
+    `;
+
+    const thumb = row.querySelector('img');
+    thumb.addEventListener('touchstart', (e) => { e.preventDefault(); showImgPreview(q.image); }, { passive: false });
+    thumb.addEventListener('touchend', hideImgPreview);
+    thumb.addEventListener('touchcancel', hideImgPreview);
+    thumb.addEventListener('mousedown', () => showImgPreview(q.image));
+    thumb.addEventListener('mouseup', hideImgPreview);
+    thumb.addEventListener('mouseleave', hideImgPreview);
+
+    // Pre-fetch image so share button can call navigator.share() synchronously
+    let imgFile = null;
+    fetch(q.image)
+      .then(r => r.blob())
+      .then(blob => {
+        const ext = blob.type.split('/')[1] || 'jpg';
+        imgFile = new File([blob], `${q.correct_answer}.${ext}`, { type: blob.type });
+      })
+      .catch(() => {});
+
+    row.querySelector('.share-item-btn').addEventListener('click', () => shareItem(q, imgFile));
+
+    list.appendChild(row);
+  });
+}
+</script>
+</body>
+</html>
