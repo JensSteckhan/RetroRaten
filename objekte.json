@@ -226,5 +226,13 @@
     "pfeil": false,
     "choices": ["Trockenhaube", "Designerlampe", "Rennairbag", "Elektrischer Stuhl"],
     "correct_answer": "Trockenhaube"
+  },
+  {
+    "id": 28,
+    "image": "BilderZeug/Heissmangel.jpg",
+    "name": "Heissmangel",
+    "pfeil": false,
+    "choices": ["Heissmangel", "Lithografiemaschine", "Nudelmaschine", "Matrixdrucker"],
+    "correct_answer": "Heissmangel"
   }
 ]
