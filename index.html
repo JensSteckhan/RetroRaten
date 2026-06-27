@@ -519,6 +519,7 @@ let winStreak = 0;
 let loseStreak = 0;
 let userAnswers = [];
 let answersLocked = false;
+let devMode = false;
 
 async function init() {
   try { config = await fetch('config.json').then(r => r.json()); } catch {}
@@ -583,6 +584,7 @@ function pickBag(key) {
 }
 
 function startQuiz() {
+  devMode = false;
   questions = pickRoundObjects();
   currentIndex = 0;
   score = 0;
@@ -602,6 +604,7 @@ function restartQuiz() {
 function devSkip() {
   if (!document.getElementById('screen-start').classList.contains('active')) return;
   if (!allObjects.length) return;
+  devMode = true;
   questions = pickRoundObjects();
   currentIndex = 0; score = 0; winStreak = 0; loseStreak = 0;
   userAnswers = []; bags.correct = []; bags.wrong = [];
@@ -882,6 +885,19 @@ function showResults() {
   document.getElementById('result-score').textContent = `${score} / ${questions.length}`;
   const tier = TIER_TITLES.find(t => score >= t.min && score <= t.max);
   document.getElementById('result-title').textContent = tier ? tier.title : '-';
+
+  if (!devMode) submitStats();
+}
+
+async function submitStats() {
+  try {
+    const payload = userAnswers.map(a => ({ id: a.question.id, correct: a.correct }));
+    await fetch('stats.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch {}
 }
 
 function showToast(emoji, text) {
@@ -921,11 +937,16 @@ function hideImgPreview() {
   document.getElementById('img-preview-overlay').classList.remove('visible');
 }
 
-function showRevelation() {
+async function showRevelation() {
   document.getElementById('results-phase1').classList.add('hidden');
   document.getElementById('results-phase1').classList.remove('flex');
   document.getElementById('results-phase2').classList.remove('hidden');
   document.getElementById('results-phase2').classList.add('flex');
+
+  let globalStats = {};
+  try {
+    globalStats = await fetch('stats.php').then(r => r.json());
+  } catch {}
 
   const list = document.getElementById('results-list');
   list.innerHTML = '';
@@ -933,6 +954,21 @@ function showRevelation() {
   userAnswers.forEach((entry, i) => {
     const q = entry.question;
     const correct = entry.correct;
+
+    const stat = globalStats[String(q.id)];
+    let statsHtml = '';
+    if (stat && stat.total > 0) {
+      const pct = Math.round((stat.correct / stat.total) * 100);
+      const barColor = `hsl(${Math.round(pct * 1.2)},100%,50%)`;
+      statsHtml = `
+        <div class="mt-2">
+          <div style="height:3px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden;margin-bottom:4px">
+            <div style="height:100%;width:${pct}%;background:${barColor};box-shadow:0 0 6px ${barColor};border-radius:2px"></div>
+          </div>
+          <div class="text-slate-400" style="font-size:11px;white-space:nowrap">🌍 Im Durchschnitt wurde diese Frage zu ${pct}% richtig beantwortet.</div>
+        </div>`;
+    }
+
     const row = document.createElement('div');
     row.className = 'result-row card p-4 flex gap-3 items-start pop-in';
     row.style.animationDelay = `${i * 0.04}s`;
@@ -950,6 +986,7 @@ function showRevelation() {
           ${entry.userChoice === null ? '⏰ Zeit abgelaufen' : `${correct ? '✅' : '❌'} Deine Antwort: ${entry.userChoice}`}
         </div>
         ${!correct ? `<div class="text-sm text-green-400 mt-1">✓ Richtig: ${q.correct_answer}</div>` : ''}
+        ${statsHtml}
       </div>
       <button class="share-item-btn" aria-label="Teilen">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
