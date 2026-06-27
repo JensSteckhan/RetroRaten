@@ -46,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($correct) $stats[$id]['correct']++;
     }
 
-    file_put_contents($statsFile, json_encode($stats));
+    $tmp = $statsFile . '.tmp';
+    file_put_contents($tmp, json_encode($stats));
+    rename($tmp, $statsFile);
     flock($fp, LOCK_UN);
     fclose($fp);
 
