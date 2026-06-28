@@ -4,8 +4,8 @@
     "image": "BilderZeug/Waehlscheibentelefon.jpg",
     "name": "Wählscheibentelefon - Wählscheibe",
     "pfeil": true,
-    "pfeil_x": 59,
-    "pfeil_y": 50,
+    "pfeil_x": 68.8,
+    "pfeil_y": 48.0,
     "choices": ["Wählscheibe", "Nummernkreis", "Ziffernpicker", "Lochscheibe", "Lochkarte"],
     "correct_answer": "Wählscheibe"
   },
@@ -14,8 +14,8 @@
     "image": "BilderZeug/Waehlscheibentelefon.jpg",
     "name": "Wählscheibentelefon - Telefonhörer",
     "pfeil": true,
-    "pfeil_x": 49,
-    "pfeil_y": 18,
+    "pfeil_x": 55,
+    "pfeil_y": 20,
     "choices": ["Muschelhalter", "Telefonhörer", "Hörrohr", "Empfänger", "Handteil"],
     "correct_answer": "Telefonhörer"
   },
@@ -24,8 +24,8 @@
     "image": "BilderZeug/Plattenspieler.jpg",
     "name": "Plattenspieler - Tonarm",
     "pfeil": true,
-    "pfeil_x": 70,
-    "pfeil_y": 39,
+    "pfeil_x": 65.5,
+    "pfeil_y": 44.9,
     "choices": ["Tonarm", "Nadelkran", "Aufleser", "Abnehmer", "Nadelhalter"],
     "correct_answer": "Tonarm"
   },
@@ -34,14 +34,14 @@
     "image": "BilderZeug/Plattenspieler.jpg",
     "name": "Plattenspieler - Plattenteller",
     "pfeil": true,
-    "pfeil_x": 38,
-    "pfeil_y": 52,
+    "pfeil_x": 41,
+    "pfeil_y": 46,
     "choices": ["Drehteller", "Drehscheibe", "Plattenteller", "Plattenschleuder", "Vinylhalter"],
     "correct_answer": "Plattenteller"
   },
   {
     "id": 5,
-    "image": "BilderZeug/Mirofiche.jpg",
+    "image": "BilderZeug/Mikrofiche.jpg",
     "name": "Mikrofiche",
     "pfeil": false,
     "choices": ["Überweisungsformular", "Mikrofilm", "DNA Scan", "Röntgenaufnahme", "Mikrofiche"],
@@ -60,8 +60,8 @@
     "image": "BilderZeug/Kasettenrekorder.jpg",
     "name": "Kassettenspieler - Vorspultaste",
     "pfeil": true,
-    "pfeil_x": 65,
-    "pfeil_y": 63,
+    "pfeil_x": 63.6,
+    "pfeil_y": 62.1,
     "choices": ["Vorspulen", "Browsen", "Schnelldrehen", "Eildrehen"],
     "correct_answer": "Vorspulen"
   },
@@ -93,7 +93,7 @@
   },
   {
     "id": 11,
-    "image": "BilderZeug/Diktiergerat.jpg",
+    "image": "BilderZeug/Diktiergeraet.jpg",
     "name": "Diktiergerät",
     "pfeil": false,
     "choices": ["Walkie Talkie", "Sprachspeicher", "Diktiergerät", "Notizgerät", "Interview Catcher"],
@@ -112,7 +112,7 @@
     "image": "BilderZeug/Tonbandgeraet.jpg",
     "name": "Tonbandgerät",
     "pfeil": false,
-    "choices": ["Diaprojektor", "Rechenzentrum", "Tonbandgerät", "Salatschleuder", "Radarfalle"],
+    "choices": ["Diaprojektor", "Rechenzentrum", "Tonbandgerät", "Radarfalle"],
     "correct_answer": "Tonbandgerät"
   },
   {
@@ -174,10 +174,10 @@
   {
     "id": 21,
     "image": "BilderZeug/FloppyDisk.jpg",
-    "name": "5 1/4 Zoll Diskette",
+    "name": "5¼″-Diskette",
     "pfeil": false,
-    "choices": ["5 1/4 Zoll Diskette", "MiniDisc", "Zipdrive", "Großformatfilm"],
-    "correct_answer": "5 1/4 Zoll Diskette"
+    "choices": ["5¼″-Diskette", "MiniDisc", "Zipdrive", "Großformatfilm"],
+    "correct_answer": "5¼″-Diskette"
   },
   {
     "id": 22,
@@ -234,5 +234,21 @@
     "pfeil": false,
     "choices": ["Heissmangel", "Lithografiemaschine", "Nudelmaschine", "Matrixdrucker"],
     "correct_answer": "Heissmangel"
+  },
+  {
+    "id": 29,
+    "image": "BilderZeug/Stinkbombe.jpg",
+    "name": "Stinkbombe",
+    "pfeil": false,
+    "choices": ["Atropin", "Insulin", "Stinkbombe", "Piccolo"],
+    "correct_answer": "Stinkbombe"
+  },
+  {
+    "id": 30,
+    "image": "BilderZeug/GelbeSeiten.jpg",
+    "name": "Gelbe Seiten",
+    "pfeil": false,
+    "choices": ["IKEA-Katalog", "Handelsregister", "Gelbe Seiten", "Werbeindex"],
+    "correct_answer": "Gelbe Seiten"
   }
 ]

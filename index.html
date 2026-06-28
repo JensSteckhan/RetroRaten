@@ -307,7 +307,7 @@
 <!-- ═══════════════════════════════════════════════════════ START SCREEN -->
 <div id="screen-start" class="screen active flex-col items-center justify-center min-h-dvh px-6 py-12 text-center">
 
-  <div class="mb-2 retro-font text-xs neon-text-cyan tracking-widest opacity-70">
+  <div class="mb-2 retro-font text-xs neon-text-cyan tracking-widest opacity-70" onclick="playCoinSound()" style="cursor:pointer;">
     <span class="blink">▶</span> INSERT COIN <span class="blink">◀</span>
   </div>
 
@@ -343,17 +343,17 @@
       </p>
     </div>
 
-    <div class="flex gap-3 mb-6 text-xs retro-font text-slate-500">
-      <span>🎮 <span id="start-count-badge">18</span> FRAGEN</span>
+    <div class="flex gap-3 mb-6 text-xs retro-font text-slate-500 whitespace-nowrap">
+      <span class="whitespace-nowrap">🎮 <span id="start-count-badge">18</span> FRAGEN</span>
       <span>·</span>
-      <span>⚡ STREAK SYSTEM</span>
+      <span class="whitespace-nowrap">⚡ STREAK SYSTEM</span>
     </div>
 
     <button class="start-btn" onclick="startQuiz()">START</button>
   </div>
 
   <div class="mt-12 retro-font text-xs text-slate-600">
-    © 2026 RETRO RATEN v1.0
+    © 2026 RETRO RATEN v1.1
   </div>
 
   <div id="impressum-footer" style="display:none; margin-top:12px;">
@@ -396,11 +396,21 @@
     </div>
 
     <!-- Image card -->
-    <div class="card overflow-hidden rounded-2xl neon-border-cyan relative" style="aspect-ratio: 4/3;">
+    <div class="card overflow-hidden rounded-2xl neon-border-cyan relative" style="aspect-ratio: 3/2;">
       <img id="q-image" src="" alt="Objekt" class="w-full h-full object-contain bg-slate-900 p-2">
       <div id="pfeil-marker" class="pfeil-marker hidden">
         <div class="arrow-icon">▼</div>
         <div class="arrow-dot"></div>
+      </div>
+      <div id="calibrate-bar" class="hidden" style="position:absolute; inset:0; pointer-events:none; font-family:'Inter',sans-serif;">
+        <div style="position:absolute; top:8px; left:8px; right:8px; background:rgba(0,0,0,0.75); border:1px solid var(--neon-yellow); border-radius:8px; padding:6px 10px; font-size:12px; color:var(--neon-yellow); pointer-events:auto;">
+          <div id="calibrate-info">id ? — ?</div>
+          <div id="calibrate-readout" style="margin-top:2px; color:#fff;">Klick ins Bild, um pfeil_x/pfeil_y zu setzen</div>
+          <div style="display:flex; gap:8px; margin-top:6px;">
+            <button onclick="calibrateStep(-1)" style="flex:1; background:var(--card-bg); color:var(--neon-cyan); border:1px solid var(--neon-cyan); border-radius:6px; padding:4px; font-size:12px;">◀ Zurück</button>
+            <button onclick="calibrateStep(1)" style="flex:1; background:var(--card-bg); color:var(--neon-cyan); border:1px solid var(--neon-cyan); border-radius:6px; padding:4px; font-size:12px;">Weiter ▶</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -429,7 +439,7 @@
     <div class="retro-font text-xs neon-text-cyan mb-4 text-center tracking-widest">AUFLÖSUNG</div>
     <div id="results-list" class="flex flex-col gap-3 pb-4"></div>
     <div class="text-center mt-6 pb-10">
-      <button class="start-btn" onclick="restartQuiz()">NOCHMAL</button>
+      <button id="restart-btn" class="start-btn" onclick="restartQuiz()">NOCHMAL</button>
     </div>
   </div><!-- end phase2 -->
 </div><!-- end screen-results -->
@@ -501,15 +511,15 @@ const FEEDBACK = {
 };
 
 const TIER_TITLES = [
-  { min: 0,  max: 4,  title: "Digital Native" },
-  { min: 5,  max: 9,  title: "Halbwissen-Held" },
-  { min: 10, max: 14, title: "Retro-Checker" },
-  { min: 15, max: 17, title: "Dinge-Detektiv" },
-  { min: 18, max: 18, title: "Zeitmaschinen-Chef" },
+  { min: 0,  max: 3,  title: "Digital Native" },
+  { min: 4,  max: 7,  title: "Halbwissen-Held" },
+  { min: 8,  max: 11, title: "Retro-Checker" },
+  { min: 12, max: 14, title: "Dinge-Detektiv" },
+  { min: 15, max: 15, title: "Zeitmaschinen-Chef" },
 ];
 
 let allObjects = [];
-let config = { tabs: true, roundSize: 18, showImpressumLink: false };
+let config = { roundSize: 18, showImpressumLink: false };
 const SEEN_KEY = 'retroraten_seen_ids';
 
 let questions = [];
@@ -520,6 +530,9 @@ let loseStreak = 0;
 let userAnswers = [];
 let answersLocked = false;
 let devMode = false;
+
+let calibrateMode = false;
+let calibrateIndex = 0;
 
 async function init() {
   try { config = await fetch('config.json').then(r => r.json()); } catch {}
@@ -532,19 +545,61 @@ async function init() {
   }
 
   const n = Math.min(config.roundSize, allObjects.length);
-  document.getElementById('start-count').textContent = n;
+  document.getElementById('start-count').textContent = allObjects.length;
   document.getElementById('start-count-badge').textContent = n;
 
   if (config.showImpressumLink) {
     document.getElementById('impressum-footer').style.display = 'block';
   }
+
+  const calParam = new URLSearchParams(location.search).get('calibrate');
+  if (calParam !== null) {
+    calibrateMode = true;
+    const wantedId = Number(calParam);
+    const startIndex = allObjects.findIndex(o => o.id === wantedId);
+    calibrateIndex = startIndex >= 0 ? startIndex : 0;
+    document.getElementById('calibrate-bar').classList.remove('hidden');
+    document.getElementById('q-image').addEventListener('click', handleCalibrateClick);
+    questions = allObjects;
+    currentIndex = calibrateIndex;
+    showScreen('quiz');
+    renderQuestion();
+  }
 }
 
 init();
 
+function playCoinSound() {
+  new Audio('coin-insert.mp3').play().catch(() => {});
+}
+
+function calibrateStep(delta) {
+  calibrateIndex = (calibrateIndex + delta + allObjects.length) % allObjects.length;
+  currentIndex = calibrateIndex;
+  renderQuestion();
+}
+
+function handleCalibrateClick(e) {
+  if (!calibrateMode) return;
+  const card = e.currentTarget.parentElement;
+  const rect = card.getBoundingClientRect();
+  const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+
+  const marker = document.getElementById('pfeil-marker');
+  marker.style.left = x.toFixed(1) + '%';
+  marker.style.top = y.toFixed(1) + '%';
+  marker.classList.remove('hidden');
+
+  document.getElementById('calibrate-readout').textContent =
+    `pfeil_x: ${x.toFixed(1)}   pfeil_y: ${y.toFixed(1)}`;
+}
+
+let remainingAfterRound = 0;
+
 function pickRoundObjects() {
   const n = Math.min(config.roundSize, allObjects.length);
-  if (n >= allObjects.length) return shuffle([...allObjects]);
+  if (n >= allObjects.length) { remainingAfterRound = 0; return shuffle([...allObjects]); }
 
   let seenIds;
   try { seenIds = JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'); }
@@ -555,6 +610,7 @@ function pickRoundObjects() {
   const selected   = [...unseenPool, ...seenPool].slice(0, n);
 
   const newSeen = [...new Set([...seenIds, ...selected.map(o => o.id)])];
+  remainingAfterRound = Math.max(0, allObjects.length - newSeen.length);
   try {
     localStorage.setItem(SEEN_KEY,
       newSeen.length >= allObjects.length ? '[]' : JSON.stringify(newSeen));
@@ -750,12 +806,19 @@ function renderQuestion() {
   img.classList.add('slide-up');
 
   const marker = document.getElementById('pfeil-marker');
-  if (q.pfeil && q.pfeil_x != null && q.pfeil_y != null) {
+  if (q.pfeil_x != null && q.pfeil_y != null && (q.pfeil || calibrateMode)) {
     marker.style.left = q.pfeil_x + '%';
     marker.style.top  = q.pfeil_y + '%';
     marker.classList.remove('hidden');
   } else {
     marker.classList.add('hidden');
+  }
+
+  if (calibrateMode) {
+    stopTimer();
+    const coords = (q.pfeil_x != null) ? `pfeil_x: ${q.pfeil_x}, pfeil_y: ${q.pfeil_y}` : '(noch keine Koordinaten)';
+    document.getElementById('calibrate-info').textContent = `id ${q.id} — ${q.name} — ${coords}`;
+    document.getElementById('calibrate-readout').textContent = 'Klick ins Bild, um pfeil_x/pfeil_y zu setzen';
   }
 
   const container = document.getElementById('answers-container');
@@ -773,11 +836,11 @@ function renderQuestion() {
   });
 
   updateStreakDisplay();
-  startTimer();
+  if (!calibrateMode) startTimer();
 }
 
 function handleAnswer(choice, btn, q) {
-  if (answersLocked) return;
+  if (answersLocked || calibrateMode) return;
   answersLocked = true;
   stopTimer();
 
@@ -818,7 +881,7 @@ function showFeedback(isCorrect) {
   let feedback;
 
   if (isCorrect && winStreak >= 6) {
-    feedback = FEEDBACK.streak_win[4];
+    feedback = { emoji: FEEDBACK.streak_win[4].emoji, text: `STREAK x${winStreak} — ${pickBag('correct').text}` };
   } else if (isCorrect && winStreak === 5) {
     feedback = FEEDBACK.streak_win[3];
   } else if (isCorrect && winStreak === 4) {
@@ -828,7 +891,7 @@ function showFeedback(isCorrect) {
   } else if (isCorrect && winStreak === 2) {
     feedback = FEEDBACK.streak_win[0];
   } else if (!isCorrect && loseStreak >= 6) {
-    feedback = FEEDBACK.streak_lose[4];
+    feedback = { emoji: FEEDBACK.streak_lose[4].emoji, text: `${loseStreak} falsch — ${pickBag('wrong').text}` };
   } else if (!isCorrect && loseStreak === 5) {
     feedback = FEEDBACK.streak_lose[3];
   } else if (!isCorrect && loseStreak === 4) {
@@ -886,7 +949,13 @@ function showResults() {
   const tier = TIER_TITLES.find(t => score >= t.min && score <= t.max);
   document.getElementById('result-title').textContent = tier ? tier.title : '-';
 
+  document.getElementById('restart-btn').textContent = getRestartButtonLabel();
+
   if (!devMode) submitStats();
+}
+
+function getRestartButtonLabel() {
+  return remainingAfterRound > 0 ? `${remainingAfterRound} MEHR!` : 'NOCHMAL';
 }
 
 async function submitStats() {
@@ -937,6 +1006,8 @@ function hideImgPreview() {
   document.getElementById('img-preview-overlay').classList.remove('visible');
 }
 
+document.addEventListener('mouseup', hideImgPreview);
+
 async function showRevelation() {
   document.getElementById('results-phase1').classList.add('hidden');
   document.getElementById('results-phase1').classList.remove('flex');
@@ -965,7 +1036,7 @@ async function showRevelation() {
           <div style="height:3px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden;margin-bottom:4px">
             <div style="height:100%;width:${pct}%;background:${barColor};box-shadow:0 0 6px ${barColor};border-radius:2px"></div>
           </div>
-          <div class="text-slate-400" style="font-size:11px;white-space:nowrap">🌍 Im Durchschnitt wurde diese Frage zu ${pct}% richtig beantwortet.</div>
+          <div class="text-slate-400" style="font-size:11px;white-space:nowrap">${pct}% der anderen hatten's richtig</div>
         </div>`;
     }
 
@@ -1002,8 +1073,6 @@ async function showRevelation() {
     thumb.addEventListener('touchend', hideImgPreview);
     thumb.addEventListener('touchcancel', hideImgPreview);
     thumb.addEventListener('mousedown', () => showImgPreview(q.image));
-    thumb.addEventListener('mouseup', hideImgPreview);
-    thumb.addEventListener('mouseleave', hideImgPreview);
 
     // Pre-fetch image so share button can call navigator.share() synchronously
     let imgFile = null;
