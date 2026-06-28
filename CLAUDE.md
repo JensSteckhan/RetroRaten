@@ -1,7 +1,11 @@
 # RetroRaten — Project State for Claude
 
 ## What it is
-Mobile-first web quiz app. 18 retro objects to identify via multiple choice. Neon arcade aesthetic. Single-file HTML5 SPA, no framework, no build step.
+Mobile-first web quiz app. Players identify retro objects via multiple choice questions. Neon arcade aesthetic. Single-file HTML5 SPA, no framework, no build step.
+
+- **Quiz format:** A configurable number of objects are drawn from the full pool and presented one at a time. Each guess has a configurable time limit (countdown timer per question).
+- **End screen:** After the last question, a revelation list is shown — every object with its correct answer, the player's choice, and a share button.
+- **Stats tracking:** Each answer (correct/incorrect) is sent to a PHP script on the server (`stats.php`), which appends to a JSON file. This tracks aggregate per-object performance across all players.
 
 ## Target audience
 **Teenagers** who don't know these objects or have only heard of them but never seen them. The app is meant to be funny and social — players will share the absurd wrong answers with friends.
@@ -18,6 +22,8 @@ Mobile-first web quiz app. 18 retro objects to identify via multiple choice. Neo
 - `index.html` — complete app (single file, all HTML/CSS/JS)
 - `objekte.json` — all questions (source of truth, human-editable)
 - `BilderZeug/` — all images (filenames ASCII-only, umlauts replaced: ä→ae, ü→ue, ö→oe)
+- `stats.php` — server-side script that receives answer events and appends to `stats.json`
+- `stats.json` — aggregate per-object answer stats (correct/incorrect counts per object id), stored on server
 - `CLAUDE.md` — this file
 
 ## Local dev server
