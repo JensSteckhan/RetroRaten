@@ -44,7 +44,7 @@
     "image": "BilderZeug/Mikrofiche.jpg",
     "name": "Mikrofiche",
     "pfeil": false,
-    "choices": ["Überweisungsformular", "Mikrofilm", "DNA Scan", "Röntgenaufnahme", "Mikrofiche"],
+    "choices": ["Überweisungsformular", "DNA Scan", "Röntgenaufnahme", "Mikrofiche"],
     "correct_answer": "Mikrofiche"
   },
   {
@@ -72,7 +72,7 @@
     "pfeil": true,
     "pfeil_x": 50,
     "pfeil_y": 38,
-    "choices": ["Glühfaden", "Leuchtschnur", "Heizdraht", "Filament", "Osram"],
+    "choices": ["Glühfaden", "Leuchtschnur", "Heizdraht", "Osram"],
     "correct_answer": "Glühfaden"
   },
   {
@@ -152,7 +152,7 @@
     "image": "BilderZeug/Modem.jpg",
     "name": "Modem",
     "pfeil": false,
-    "choices": ["Overhead Projektor", "Modem", "Autoradio", "Höhensonne", "Festplatte"],
+    "choices": ["Warmhalteplatte", "Modem", "Autoradio", "Höhensonne", "Festplatte"],
     "correct_answer": "Modem"
   },
   {
