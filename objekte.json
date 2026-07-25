@@ -264,7 +264,7 @@
     "image": "BilderZeug/Bonanza.jpg",
     "name": "Bonanza",
     "pfeil": false,
-    "choices": ["Bonanza Fahrrad", "City Cruiser", "Bud Spencer Bike", "Easy Rider"],
+    "choices": ["Bonanza Fahrrad", "City Cruiser", "Chopper", "Easy Rider"],
     "correct_answer": "Bonanza Fahrrad"
   },
   {
