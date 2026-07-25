@@ -250,5 +250,21 @@
     "pfeil": false,
     "choices": ["IKEA-Katalog", "Handelsregister", "Gelbe Seiten", "Werbeindex"],
     "correct_answer": "Gelbe Seiten"
+  },
+  {
+    "id": 31,
+    "image": "BilderZeug/Negativ.jpg",
+    "name": "Negativ",
+    "pfeil": false,
+    "choices": ["Röntgenaufnahme", "Negativ", "Microfiche", "Daumenkino"],
+    "correct_answer": "Gelbe Seiten"
+  },
+  {
+    "id": 32,
+    "image": "BilderZeug/Bonanza.jpg",
+    "name": "Bonanza",
+    "pfeil": false,
+    "choices": ["Bonanza Fahrrad", "City Cruiser", "Bud Spencer Bike", "Easy Rider"],
+    "correct_answer": "Gelbe Seiten"
   }
 ]
