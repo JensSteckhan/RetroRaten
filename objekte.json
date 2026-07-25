@@ -275,4 +275,12 @@
     "choices": ["Tonerkassette", "Farbband", "Charivari", "Expander"],
     "correct_answer": "Farbband"
   }
-]
+],
+  {
+    "id": 34,
+    "image": "BilderZeug/Pager.jpg",
+    "name": "Pager",
+    "pfeil": false,
+    "choices": ["eReader", "PalmPilot", "Pager", "Gameboy"],
+    "correct_answer": "Pager"
+  }
