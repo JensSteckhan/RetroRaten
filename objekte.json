@@ -257,7 +257,7 @@
     "name": "Negativ",
     "pfeil": false,
     "choices": ["Röntgenaufnahme", "Negativ", "Microfiche", "Daumenkino"],
-    "correct_answer": "Gelbe Seiten"
+    "correct_answer": "Negativ"
   },
   {
     "id": 32,
@@ -265,6 +265,14 @@
     "name": "Bonanza",
     "pfeil": false,
     "choices": ["Bonanza Fahrrad", "City Cruiser", "Bud Spencer Bike", "Easy Rider"],
-    "correct_answer": "Gelbe Seiten"
+    "correct_answer": "Bonanza Fahrrad"
+  },
+  {
+    "id": 33,
+    "image": "BilderZeug/Farbband.jpg",
+    "name": "Farbband",
+    "pfeil": false,
+    "choices": ["Tonerkassette", "Farbband", "Charivari", "Expander"],
+    "correct_answer": "Farbband"
   }
 ]
