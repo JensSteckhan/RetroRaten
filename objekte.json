@@ -301,7 +301,7 @@
   },
   {
     "id": 37,
-    "image": "BilderZeug/Zündplaettchen.jpg",
+    "image": "BilderZeug/Zuendplaettchen.jpg",
     "name": "Zündplättchenband",
     "pfeil": false,
     "choices": ["Lackmustest", "Dopingteststreifen", "Lochstreifen (ungebraucht)", "Zündplättchenband"],
