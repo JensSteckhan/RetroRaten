@@ -274,8 +274,7 @@
     "pfeil": false,
     "choices": ["Tonerkassette", "Farbband", "Charivari", "Expander"],
     "correct_answer": "Farbband"
-  }
-],
+  },
   {
     "id": 34,
     "image": "BilderZeug/Pager.jpg",
@@ -283,4 +282,37 @@
     "pfeil": false,
     "choices": ["eReader", "PalmPilot", "Pager", "Gameboy"],
     "correct_answer": "Pager"
+  },
+  {
+    "id": 35,
+    "image": "BilderZeug/Kaugummiautomat.jpg",
+    "name": "Kaugummiautomat",
+    "pfeil": false,
+    "choices": ["Kaleidoskop", "Notrufsäule", "Kaugummiautomat", "Kleintresor"],
+    "correct_answer": "Kaugummiautomat"
+  },
+  {
+    "id": 36,
+    "image": "BilderZeug/Anfeuchter.jpg",
+    "name": "Briefmarkenanfeuchter",
+    "pfeil": false,
+    "choices": ["Briefmarkenanfeuchter", "Puderquaste", "Sitzring", "Staubsaugerfilter"],
+    "correct_answer": "Briefmarkenanfeuchter"
+  },
+  {
+    "id": 37,
+    "image": "BilderZeug/Zündplaettchen.jpg",
+    "name": "Zündplättchenband",
+    "pfeil": false,
+    "choices": ["Lackmustest", "Dopingteststreifen", "Lochstreifen (ungebraucht)", "Zündplättchenband"],
+    "correct_answer": "Zündplättchenband"
+  },
+  {
+    "id": 38,
+    "image": "BilderZeug/Warmhalteplatte.jpg",
+    "name": "Warmhalteplatte",
+    "pfeil": false,
+    "choices": ["Pflanzenuntersetzer", "Klangschale", "Kachelhalter", "Warmhalteplatte"],
+    "correct_answer": "Warmhalteplatte"
   }
+]
