@@ -272,7 +272,7 @@
     "image": "BilderZeug/Farbband.jpg",
     "name": "Farbband",
     "pfeil": false,
-    "choices": ["Tonerkassette", "Farbband", "Charivari", "Expander"],
+    "choices": ["Tonerkassette", "Farbband", "Charivari", "Spinnrad"],
     "correct_answer": "Farbband"
   },
   {
